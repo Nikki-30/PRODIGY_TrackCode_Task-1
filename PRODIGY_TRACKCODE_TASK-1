@@ -1,0 +1,48 @@
+import pandas as pd
+
+# Load the training data
+data = pd.read_csv('train.csv')
+
+# Select relevant columns
+selected_columns = ['GrLivArea', 'BedroomAbvGr', 'FullBath', 'HalfBath', 'SalePrice']
+data_selected = data[selected_columns]
+
+# Check for missing values
+missing_values = data_selected.isnull().sum()
+print(missing_values)
+
+# Handle missing values if any (e.g., by imputing or dropping)
+data_selected = data_selected.dropna()  # Example: Dropping rows with missing values
+
+# Features
+X = data_selected[['GrLivArea', 'BedroomAbvGr', 'FullBath', 'HalfBath']]
+# Target variable
+y = data_selected['SalePrice']
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+from sklearn.linear_model import LinearRegression
+
+# Initialize the model
+model = LinearRegression()
+# Train the model
+model.fit(X_train, y_train)
+
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Predict on the test set
+y_pred = model.predict(X_test)
+# Calculate Mean Squared Error
+mse = mean_squared_error(y_test, y_pred)
+# Calculate R-squared
+r2 = r2_score(y_test, y_pred)
+
+print(f'Mean Squared Error: {mse}')
+print(f'R-squared: {r2}')
+
+# Coefficients of the model
+coefficients = pd.DataFrame({'Feature': X.columns, 'Coefficient': model.coef_})
+print(coefficients)
+
